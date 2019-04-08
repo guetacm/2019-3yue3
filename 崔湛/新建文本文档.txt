@@ -1,0 +1,102 @@
+﻿#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define  L  70
+
+int cutnum;                 // 木棍的数量
+int cutlen[ L ], totlen;    // 木棍的各自长度，及总长度
+
+int cmp( const void *pa, const void *pb) {
+        return (*((int*)pb)) - (*((int*)pa));
+}
+
+int orglen, orgnum; // 原始木棍的长度及其数量
+int used[ L ];      // dfs 时标记某木棍是否已经被用于组装原始木棍
+//int choice[ L ];
+
+        // 尝试拼装某原始木棍，
+        // 此次尝试之前，
+        // 已经使用了 t 根木棍，
+        // 已经拼装出了原始木棍的部分长度，剩余 c 长度需要拼装，
+        // 此次尝试，只需要从第 b 根木棍开始。
+int dfs(int c, int b, int t) {
+        int i, prelen = -1;
+        if ( 0 == c ) {
+                // 剩余长度为 0，则开始拼装下一根原始木棍，
+                // 需扩大尝试的范围。
+                for ( i = 0; (i < cutnum) && (used[i]); ++i ) {
+                }
+                // 所有木棍都已经被用于拼装原始木棍，
+                // 即尝试成功。
+                if ( i >= cutnum ) {
+                        //printf("i >= cutnum, t = %d\n", t);
+                        return 1;
+                }
+                used[ i ] = 1;
+                //choice[ t ] = i;
+                // 任一原始木棍中，必含有剩余木棍中最长的那根
+                if ( dfs(orglen-cutlen[i], i+1, t+1) ) {
+                        return 1;
+                }
+                used[ i ] = 0;
+                return 0;
+        }
+        for ( i = b; i < cutnum; ++i ) {
+                if (    (used[ i ]) ||          // 木棍没用过
+                        (c < cutlen[i]) ||      // 剩余长度能容纳此木棍
+                        (prelen == cutlen[i])   // 此长度的木棍已经试过，不行，无需再试
+                ) {
+                        continue;
+                }
+                used[ i ] = 1;
+                //choice[ t ] = i;
+
+                // 下次尝试从后面的木棍开始，前面的木棍无需考虑
+                if ( dfs(c-cutlen[i], i+1, t+1) ) {
+                        return 1;
+                }
+                prelen = cutlen[ i ];
+
+                used[ i ] = 0;
+        }
+        return 0;
+}
+
+int find(){
+        // 原始木棍长度必为总长度的约数
+        if ( 0 != totlen % orglen ) {
+                return 0;
+        }
+        orgnum = totlen / orglen;
+        memset(used, 0, sizeof(used));
+        return dfs(0, 0, 0);
+}
+
+int main() {
+        int i;
+        while ( (1 == scanf("%d", &cutnum)) && (0 < cutnum) ) {
+                totlen = 0;
+                for ( i = 0; i < cutnum; ++i ) {
+                        scanf("%d", cutlen+i);
+                        totlen += cutlen[ i ];
+                }
+                // 将木棍从长到短排序，然后从长到短搜索之
+                qsort(cutlen, cutnum, sizeof(cutlen[0]), cmp);
+                // 原始木棍长度必大于等于最长木棍长度，
+                // 小于等于木棍总长度，
+                // 从短到长枚举原始木棍长度。
+                for ( orglen = cutlen[0]; (orglen < totlen) && (! find()); ++orglen ) {
+                }
+                printf("%d\n", orglen);
+                //if ( orglen != totlen ) {
+                //        for ( i = 0; i < cutnum; ++i ) {
+                //                printf("--%d--", choice[ i ]);
+                //        }
+                //        printf("\n");
+                //}
+        }
+        return 0;
+}
+//这道题考察的是搜索，剪枝，还有dfs，第一开始看，感觉没有条理。
+//我认为自己与别人还有很大差距，尤其是算法掌握的不够精，不够多，练的也很少，所以我觉得应该更加努力。
