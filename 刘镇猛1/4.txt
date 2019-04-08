@@ -1,0 +1,45 @@
+
+#include <bits/stdc++.h>
+using namespace std;
+bool used[65];
+int n, stick[65];
+int cnt;
+int cmp(int a, int b)
+{
+	return a > b;
+}
+//len原木棒的长度，needlen当前木棒拼接为原木棒所需要的长度，num剩余可用木棒的数量 
+int dfs(int len, int needlen, int num)
+{
+	//如果当前可用木棒的数量和当前木棒拼接为原木棒所需要的长度均为0，说明找到len，返回len的值 
+	if (num == 0 && needlen == 0)
+		return len;
+	//如果当前木棒拼接为原木棒所需要的长度为0，说明已经拼接好一根木棒，将len赋值给needlen 
+	if (needlen == 0)
+		needlen = len;
+	//从第一根木棒开始遍历 
+	for (int i = 0; i < n; i++) {
+		//如果这根木棒已经被使用，就跳过这一次循环 
+		if (used[i])
+			continue;
+		//如果当前木棒的长度小于等于所需木棒的长度 
+		if (needlen >= stick[i]) {
+			//标记此木棒已被使用 
+			used[i] = true;
+			//在此基础上深搜 
+			if (dfs(len, needlen - stick[i], num - 1))
+				return len;
+			//搜索失败，将使用标记清除 
+			used[i] = 0;
+			//如果当前木棒的长度等于拼接成原木棒所需要的长度或原木棒的长度等于拼接成原木棒所需要的长度，跳出循环
+			//因为木棒长度从大到小排列，当前木棒已经是最合适的了，如果当前木棒都不能拼接成功，后面的木棒都不行了
+			// 
+			if (stick[i] == needlen || len == needlen)
+				break;
+			//搜索失败，跳过所有长度相同的木棒 
+			while (stick[i] == stick[i + 1])
+				i++;
+		}
+	}
+	return 0;
+}

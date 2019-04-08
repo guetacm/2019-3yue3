@@ -1,0 +1,49 @@
+#include <iostream>
+#include<algorithm>
+#include<string>
+using namespace std;
+char chucun[10001][2];//用来储存首字母和尾字母
+bool s;//判断是否查找到
+bool vis[10001];//判断是否搜索过，防止重复搜索
+int n;
+void dfs(char c)
+{
+	if (s ==true) return;
+	if (c == 'b') { s = true; return; }//从后面往前面找，找到b就结束
+	int i;
+	for ( i = 0; i <n; ++i)
+	{
+		if (vis[i] == 1) continue;
+		if (chucun[i][0] == c)
+		{
+			vis[i] = 1;
+			dfs(chucun[i][1]);//查找第二个单词的首字母和前一个尾字母相同的单词，才可以组成咒语
+			vis[i] = 0;
+		}
+	}
+	return;
+}
+int main()
+{
+	string a;
+	int len;
+	n = 0;
+	while (cin>>a)
+	{
+		if (a[0] == '0')//当a为0时，说明一组结束，开始检索
+		{
+			memset(vis, 0, sizeof(vis));
+			s = false;
+			dfs('m');
+			if (s) cout << "Yes." << endl;
+			else cout << "No." << endl;
+			n = 0;
+		    continue;
+		}
+		len = a.length();
+		if (a[len - 1] == a[0]) continue;//当一个单词首尾字母相同时就不用储存
+		chucun[n][0] = a[len - 1];//储存输入字符串的首尾单词
+		chucun[n++][1] = a[0]; 
+	}
+	return 0;
+}

@@ -1,0 +1,40 @@
+#include<iostream>
+#include<algorithm>
+#include<cstring>
+#include<string>
+using namespace std;
+int tot, C[11], n;
+void search(int cur)
+{
+	if (cur == n)tot++;
+	else  for (int i = 0; i < n; i++)
+	{
+		int ok = 1;
+		C[cur] = i;//cur行的皇后放到第i列
+		for (int j = 0; j < cur; j++)
+			if ((C[cur] == C[j]) || (cur - C[cur]) == (j - C[j]) || (cur + C[cur]) == (j + C[j]))//检查是否冲突不可以在对角线和同一行和同一列
+			{
+				ok = 0; break; 
+			}
+		if (ok)search(cur + 1);//若合法,则继续往深处搜寻‘
+
+	}
+}
+int main()
+{
+	int ans[10], N;
+	for (int i = 1; i < 11; i++)
+	{
+		tot = 0;
+		n = i;
+		search(0);
+		ans[i - 1] = tot;
+	}
+	while (cin >> N)
+	{
+		if (N == 0)
+			return 0;
+		cout << ans[N - 1] << endl;
+	}
+	return 0;
+}

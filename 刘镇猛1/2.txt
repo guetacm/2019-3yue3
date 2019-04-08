@@ -1,0 +1,42 @@
+#include<bits/stdc++.h>
+using namespace std;
+int m, n;//n代表列，m代表行
+int cnt;
+char mp[100][100];
+void dfs(int p, int q) //p是行 q是列
+{
+	if (mp[p][q] != '.' || p < 0 || q < 0 || p >= m || q >= n) //判断是否可以走，并且是否超出界限
+	return;
+	else {
+		cnt++;
+		mp[p][q] = '#';//走过的就标记为红砖，表示不可以继续走，然后上下左右搜索
+		dfs(p - 1, q);
+		dfs(p, q + 1);
+		dfs(p + 1, q);
+		dfs(p, q - 1);
+	}
+}
+int main() {
+	int i, j;
+	while (cin>>n>>m) {
+		cnt = 0;
+		memset(mp, 0, sizeof(mp));
+		if (n == 0 && m == 0) break;
+		for (i = 0; i < m; i++) {
+			for (j = 0; j < n; j++) {
+				cin >> mp[i][j];
+			}
+		}
+		for (i = 0; i < m; i++) {
+			for (j = 0; j < n; j++) {
+				if (mp[i][j] == '@') //从人开始的位置开始搜索
+				{
+					mp[i][j] = '.';
+					dfs(i, j);
+				}
+			}
+		}
+		cout << cnt << endl;
+	}
+	return 0;
+}
